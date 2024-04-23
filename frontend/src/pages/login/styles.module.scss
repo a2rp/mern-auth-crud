@@ -1,0 +1,63 @@
+.container {
+    display: flex;
+    justify-content: center;
+
+    .main {
+        width: 100%;
+        max-width: 1400px;
+        padding: 15px;
+
+        .heading {
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .form {
+            margin-top: 30px;
+            max-width: 300px;
+            width: 100%;
+
+            .emailContainer,
+            .passwordContainer {
+                margin-top: 15px;
+                position: relative;
+                // border: 1px solid #aaa;
+
+                .emailInput,
+                .passwordInput {
+                    width: 100%;
+                }
+            }
+
+            .passwordContainer {
+                // border: 1px solid #aaa;
+
+                .passwordInput {
+                    padding-right: 30px;
+                    // border: 1px solid #f00;
+                }
+
+                .icon {
+                    position: absolute;
+                    margin: auto;
+                    top: 0;
+                    bottom: 0;
+                    right: 6px;
+                    font-size: 20px;
+                }
+            }
+
+            .submitButton {
+                width: 100%;
+                margin-top: 15px;
+                height: 40px;
+                overflow: hidden;
+            }
+
+            .registerLink {
+                margin-top: 15px;
+                text-align: center;
+            }
+        }
+    }
+}

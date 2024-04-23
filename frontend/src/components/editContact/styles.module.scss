@@ -1,0 +1,38 @@
+.container {
+    // padding: 15px;
+    // background-color: aliceblue;
+    margin-top: 15px;
+
+    .heading {
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .form {
+        // border: 1px solid #f00;
+        // width: 300px;
+
+        .section1 {
+            margin-top: 15px;
+            display: flex;
+            gap: 30px;
+
+            .nameInput,
+            .emailInput,
+            .phoneInput {
+                width: 100%;
+                min-width: 300px;
+            }
+        }
+
+        .aboutInput {
+            margin-top: 15px;
+        }
+
+        .submit {
+            margin-top: 15px;
+            height: 40px;
+            overflow: hidden;
+        }
+    }
+}

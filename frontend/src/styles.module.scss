@@ -1,0 +1,18 @@
+.container {
+    // border: 1px solid #f00;
+    height: 100vh;
+    overflow: hidden;
+
+    .main {
+        // border: 1px solid #f00;
+        margin-top: 70px;
+        height: calc(100vh - 70px);
+        overflow: auto;
+
+        .routerContainer {
+            // border: 1px solid #00f;
+            // height: calc(100vh - 70px);
+            height: 100%;
+        }
+    }
+}
