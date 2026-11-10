@@ -1,6 +1,7 @@
 import { CircularProgress } from "@mui/material";
 import React, { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
+import { PublicOnly, RequireAuth } from "../components/RouteGuards";
 
 const wait = (time) => {
     return new Promise(resolve => setTimeout(resolve, time));
@@ -18,9 +19,10 @@ const Router = () => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
+                <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
+                <Route path="*" element={<Home />} />
             </Routes>
         </Suspense>
     )

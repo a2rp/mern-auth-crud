@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
+import { useState } from "react"
 import styles from "./styles.module.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 
 const AddNewContact = (props) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -31,9 +31,10 @@ const AddNewContact = (props) => {
     };
 
     const handleEmailChange = (event) => {
-        const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-        const isValid = regex.test(event.target.value);
-        setEmail(event.target.value.substring(0, 40));
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const value = event.target.value.slice(0, 254);
+        const isValid = regex.test(value);
+        setEmail(value);
         if (!isValid) {
             setEmailError("Invalid email address");
         } else {
@@ -79,16 +80,22 @@ const AddNewContact = (props) => {
             };
             setIsLoading(true);
             const response = await axios(config);
-            console.log(response, "add new contact response");
             if (response.data.success === true) {
                 toast.success(response.data.message);
-                props.setAdded(true);
+                setName("");
+                setEmail("");
+                setPhone("");
+                setAbout("");
+                setNameError("Min: 3 char, Max: 20 char, A-Za-z");
+                setEmailError("Invalid email address");
+                setPhoneError("Size: 10 chars, 0-9");
+                setAboutError("Must be at least 20 chars");
+                props.onAdded?.();
             } else if (response.data.success === false) {
-                toast.warn(response.data.error);
+                toast.warn(response.data.message || "Unable to add this contact.");
             }
         } catch (error) {
-            console.log(error, "add new contact error");
-            toast.error(error.message);
+            toast.error(error.response?.data?.message || "Unable to add this contact.");
         } finally {
             setIsLoading(false);
         }

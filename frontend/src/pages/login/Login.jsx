@@ -1,156 +1,75 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Button, CircularProgress, TextField } from "@mui/material";
 import styles from "./styles.module.scss";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useCookies } from "react-cookie";
+import { useAuth } from "../../providers/AuthProvider";
 
 const Login = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
-    const [cookies, removeCookie] = useCookies([]);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const verifyCookie = async () => {
-            if (!cookies.token) {
-                navigate("/login");
-            }
-            const config = {
-                method: "POST",
-                url: "/user",
-                withCredentials: true,
-            };
-
-            const response = await axios(config);
-            // console.log(response, "dashboard response");
-            if (response.data.success === true) {
-                navigate("/dashboard");
-            } else {
-                setIsLoggedIn(false);
-            }
-        };
-        verifyCookie();
-    }, [cookies, navigate, removeCookie]);
-
+    const { login } = useAuth();
+    const [inputValue, setInputValue] = useState({ email: "", password: "" });
     const [isLoading, setIsLoading] = useState(false);
-    const [inputValue, setInputValue] = useState({
-        email: "",
-        password: "",
-    });
-    const [passwordType, setPasswordType] = useState("password");
-
-    const { email, password } = inputValue;
-    const handleOnChange = (e) => {
-        const { name, value } = e.target;
-        setInputValue({
-            ...inputValue,
-            [name]: value,
-        });
-    };
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        setIsLoading(true);
         try {
-            const config = {
-                method: "POST",
-                url: "/user/login",
-                withCredentials: true,
-                data: { ...inputValue }
-            };
-            // console.log(config, "config");
-            setIsLoading(true);
-            const response = await axios(config);
-            console.log(response.data, "response");
-            if (response.data.success === true) {
-                toast.success(response.data.message);
-                setInputValue({
-                    ...inputValue,
-                    email: "",
-                    password: "",
-                });
-                navigate("/dashboard");
-            }
+            const { data } = await axios.post("/user/login", { ...inputValue, email: inputValue.email.trim() });
+            if (!data.success || !data.user) throw new Error(data.message || "Unable to log in.");
+            login(data.user);
+            toast.success(data.message);
+            navigate("/dashboard", { replace: true });
         } catch (error) {
-            console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || error.message || "Unable to reach the API.");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <>
-            {isLoggedIn === true
-                ? <CircularProgress />
-                : <>
-                    <div className={styles.container}>
-                        <div className={styles.main}>
-                            <h3 className={styles.heading}>Login user</h3>
-                            <form className={styles.form} onSubmit={handleSubmit} noValidate autoComplete="off">
-                                <div className={styles.emailContainer}>
-                                    <TextField
-                                        value={email}
-                                        onChange={handleOnChange}
-                                        name="email"
-                                        type="email"
-                                        label="Email address"
-                                        size="small"
-                                        className={styles.emailInput}
-                                        inputProps={{
-                                            autoComplete: 'new-password',
-                                            form: {
-                                                autoComplete: 'off',
-                                            },
-                                        }}
-                                    />
-                                </div>
-
-                                <div className={styles.passwordContainer}>
-                                    <TextField
-                                        value={password}
-                                        onChange={handleOnChange}
-                                        name="password"
-                                        type={passwordType}
-                                        label="Password"
-                                        size="small"
-                                        className={styles.passwordInput}
-                                        inputProps={{
-                                            autoComplete: 'new-password',
-                                            form: {
-                                                autoComplete: 'off',
-                                            },
-                                        }}
-                                    />
-                                    {passwordType === "password"
-                                        ? <FaEyeSlash className={styles.icon} onClick={() => setPasswordType("text")} />
-                                        : <FaEye className={styles.icon} onClick={() => setPasswordType("password")} />
-                                    }
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    className={styles.submitButton}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading
-                                        ? <CircularProgress sx={{ padding: "5px" }} />
-                                        : "Submit"}
-                                </Button>
-
-                                <div className={styles.registerLink}>
-                                    Create a new account? <NavLink to={"/register"}>Register</NavLink>
-                                </div>
-                            </form>
-                        </div>
+        <div className={styles.container}>
+            <div className={styles.main}>
+                <h1 className={styles.heading}>Log in</h1>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    <TextField
+                        value={inputValue.email}
+                        onChange={(event) => setInputValue((current) => ({ ...current, email: event.target.value }))}
+                        name="email"
+                        type="email"
+                        label="Email address"
+                        autoComplete="username"
+                        size="small"
+                        className={styles.emailInput}
+                        required
+                    />
+                    <div className={styles.passwordContainer}>
+                        <TextField
+                            value={inputValue.password}
+                            onChange={(event) => setInputValue((current) => ({ ...current, password: event.target.value }))}
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            label="Password"
+                            autoComplete="current-password"
+                            size="small"
+                            className={styles.passwordInput}
+                            inputProps={{ maxLength: 72 }}
+                            required
+                        />
+                        <button type="button" className={styles.icon} style={{ border: 0, background: "transparent", color: "inherit", padding: 0, cursor: "pointer", lineHeight: 0 }} onClick={() => setShowPassword((shown) => !shown)} aria-label={showPassword ? "Hide password" : "Show password"}>
+                            {showPassword ? "Hide" : "Show"}
+                        </button>
                     </div>
-                </>}
-        </>
+                    <Button type="submit" variant="contained" className={styles.submitButton} disabled={isLoading}>
+                        {isLoading ? <CircularProgress size={22} /> : "Log in"}
+                    </Button>
+                    <div className={styles.registerLink}>Need an account? <NavLink to="/register">Register</NavLink></div>
+                </form>
+            </div>
+        </div>
     );
 };
 
 export default Login;
-

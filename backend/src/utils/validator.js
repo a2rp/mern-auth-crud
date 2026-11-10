@@ -1,22 +1,9 @@
+module.exports.isValidEmail = (emailAddress) =>
+    typeof emailAddress === "string" && emailAddress.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress);
 
-module.exports.isValidEmail = (emailAdress) => {
-    let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+module.exports.isValidUsername = (username) => /^[a-zA-Z0-9_]{3,32}$/.test(username);
 
-    if (emailAdress.match(regex))
-        return true;
-    else
-        return false;
-}
-
-module.exports.isValidUsername = (username) => {
-    const res = /^[a-zA-Z0-9_]+$/.exec(username);
-    const valid = !!res;
-    return valid;
-}
-
-module.exports.isValidPassword = (password) => {
-    const reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/;
-    return reg.test(password);
-};
-
-
+module.exports.isValidPassword = (password) =>
+    typeof password === "string"
+    && Buffer.byteLength(password, "utf8") <= 72
+    && /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,72}$/.test(password);

@@ -6,6 +6,9 @@ const {
 } = require("../controllers/contact.controller");
 
 const router = require("express").Router();
+const requireAuth = require("../middlewares/requireAuth");
+
+router.use(requireAuth);
 
 router.post("/", createContact);
 router.get("/", getContacts);
